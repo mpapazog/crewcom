@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Comms remote</title>
+    
+    <style>
+    .btn-ready {
+      background-color: grey;
+      color: white;
+    }
+    .btn-needs-attention {
+      background-color: red;
+      color: white;
+    }
+    </style>
+
+</head>
+<body>
+    
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type=text/javascript>
+        $(function() {
+          $('a#mainhref').bind('click', function() {
+            $.getJSON('/requesttoggle/?id='+$("#crewlist").val(),
+                function(data) {
+                    if ($("#mainbutton").html() === 'Offline'){
+                        $("#mainbutton").html("REQUESTING CONNECTION");
+                    }else if ($("#mainbutton").html() === 'ONLINE'){
+                        $("#mainbutton").html("REQUESTING DISCONNECT");
+                    }
+            });
+            return false;
+          });
+        });
+        
+        window.setInterval(function(){
+            $.getJSON('/mystatus/?id='+$("#crewlist").val(),
+                function(field){                
+                    if (field['status'] === 'online'){
+                        if (field['requestingToggle'] === 'false'){
+                            if ($("#mainbutton").hasClass("btn-ready")){
+                                $("#mainbutton").html("ONLINE");
+                                $("#mainbutton").removeClass('btn-ready').addClass('btn-needs-attention');
+                            }
+                        }
+                    }else{
+                        if (field['requestingToggle'] === 'false'){
+                            if ($("#mainbutton").hasClass("btn-needs-attention")){
+                                $("#mainbutton").html("Offline");
+                                $("#mainbutton").removeClass('btn-needs-attention').addClass('btn-ready');
+                            }
+                        }
+                    }
+            });
+        }, 2000);
+    </script>
+    
+    <div align="center">
+        <p> Select device
+        <select id=crewlist style="font-size:20px;height:50px;width:300px">
+            {% for node in nodes %}
+             <option value="{{ node.id }}">{{ node.name }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        </p>
+        
+        <table style="text-align:center">
+        <tr>
+            <td><a href=# id=mainhref><button id=mainbutton class="btn-ready" style="font-size:40px;height:200px;width:500px">Offline</button></a></td>
+        </tr>    
+        </table>
+    </div>
+
+</body>
+</html>

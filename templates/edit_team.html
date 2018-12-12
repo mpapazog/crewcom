@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit crew</title>
+</head>
+<body>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type=text/javascript>
+    $(function() {
+        {% for node in nodes %}
+        $('a#{{ node.id }}').bind('click', function() {
+            $.getJSON('/crewdelete/?id={{ node.id }}',
+                function(data) {
+                    window.location.href = "{{ url_for('edit_team') }}";
+                });
+        return false;
+        });
+        {% endfor %}
+        $('a#addhref').bind('click', function() {
+            if( $("#addbox").val() ) {
+                $.getJSON('/crewadd/?name='+$("#addbox").val(),
+                    function(data) {
+                        window.location.href = "{{ url_for('edit_team') }}";
+                    });
+            }
+        return false;
+        });        
+    });
+    </script>
+
+
+    <p style="text-align:right"><a href="{{ url_for('index') }}">Back to main page</a></p>
+
+    <div align="center">
+    <h1>Edit crew</h1>
+    <p>Editing the crew resets status for all members to Idle</p>
+    <table style="text-align:left">
+    {% for node in nodes %}
+        <tr><td style="width:200px">{{ node.name }}</td><td><a href=# id={{ node.id }}><button id=button{{ node.id }} style="width:70px">Delete</button></a></td></tr>
+    {% endfor %}
+    <tr><td></td></tr>
+    <tr><td><input style="width:200px" type="text" name="addnode" id=addbox></td><td><a href=# id=addhref><button id=addbtn style="width:70px">Add</button></a></td></tr>
+    </table>
+    </div>
+    
+</body>
+</html>

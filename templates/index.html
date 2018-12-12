@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Crew comms panel</title>
+    
+    <style>
+    
+    .btn-ready {
+      background-color: grey;
+      color: white;
+    }
+    .btn-online {
+      background-color: green;
+      color: white;
+    }
+    .btn-needs-attention {
+      background-color: red;
+      color: white;
+    }
+    
+    </style>
+
+</head>
+<body>
+    
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type=text/javascript>
+        {% for node in nodes %}
+        $(function() {
+            $('a#{{ node.id }}').bind('click', function() {
+                $.getJSON('/resetstatus/?id={{ node.id }}',
+                    function(data) {
+                        if (data['result'] === 'online'){
+                            $("#button{{ node.id }}").html("ONLINE");
+                            if ($("#button{{ node.id }}").hasClass("btn-needs-attention")){
+                                $("#button{{ node.id }}").removeClass('btn-needs-attention').addClass('btn-online');
+                            }else {if ($("#button{{ node.id }}").hasClass("btn-ready")) {
+                                $("#button{{ node.id }}").removeClass('btn-ready').addClass('btn-online');
+                            }}
+                        }else{
+                            $("#button{{ node.id }}").html("Idle");
+                            if ($("#button{{ node.id }}").hasClass("btn-needs-attention")){
+                                $("#button{{ node.id }}").removeClass('btn-needs-attention').addClass('btn-ready');
+                            }else{ if ($("#button{{ node.id }}").hasClass("btn-online")) {
+                                $("#button{{ node.id }}").removeClass('btn-online').addClass('btn-ready');
+                            }}
+                        }
+                });
+            return false;
+            });
+        });
+        {% endfor %}
+        
+        window.setInterval(function(){
+            $.getJSON('/crewstatus',
+                function(result){
+                $.each(result, 
+                    function(i, field){
+                    if (field['requestingToggle'] === 'true'){
+                        if ($("#button"+field['id']).hasClass("btn-ready")){
+                            $("#button"+field['id']).html("SWITCH ME ON");
+                            $("#button"+field['id']).removeClass('btn-ready').addClass('btn-needs-attention');
+                        }else if($("#button"+field['id']).hasClass("btn-online")){
+                            $("#button"+field['id']).html("TURN ME OFF");
+                            $("#button"+field['id']).removeClass('btn-online').addClass('btn-needs-attention');
+                        }
+                    }                    
+                });
+            });
+        }, 5000);
+    </script>
+    
+    <p style="text-align:right"><a href="{{ url_for('remote') }}">Remote UI</a> <a href="{{ url_for('edit_team') }}">Edit team</a></p>
+
+    <div align="center">
+    <h1>Crew communication console</h1>
+    <table style="text-align:center">
+    <tr>
+        {% for node in nodes %}
+        <th>{{ node.name }}</th>
+        {% endfor %}
+    <tr>
+    <tr>
+        {% for node in nodes %}
+        <td><a href=# id={{ node.id }}><button id=button{{ node.id }} class="btn-ready" title="Click to reset" style="font-size:30px;height:100px;width:200px">Idle</button></a></td>
+        {% endfor %}
+    </tr>    
+    </table>
+    </div>
+
+</body>
+</html>
