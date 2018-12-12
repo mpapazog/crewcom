@@ -26,7 +26,7 @@
 #
 # Depending on your operating system, the command can be "pip3" instead of "pip".
 #
-# Last modified on 2018-12-09 by Mihail Papazoglou
+# Last modified on 2018-12-12 by Mihail Papazoglou
 
 import sys, getopt, requests, json, time, datetime, os, sqlite3
 from flask import Flask, jsonify, render_template, request, url_for
@@ -35,10 +35,6 @@ from flask import Flask, jsonify, render_template, request, url_for
 
 #Default database file path
 ARG_DBFILE  = 'crewcom.sqlite3'
-
-#connect and read timeouts for the Requests module in seconds
-REQUESTS_CONNECT_TIMEOUT    = 90
-REQUESTS_READ_TIMEOUT       = 90
 
 #SECTION: GLOBAL VARIABLES: DO NOT MODIFY
 CREW_STATUS = []
