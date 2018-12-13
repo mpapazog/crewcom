@@ -28,7 +28,7 @@
 #
 # Last modified on 2018-12-12 by Mihail Papazoglou
 
-import sys, getopt, requests, json, time, datetime, os, sqlite3
+import sys, getopt, os, sqlite3
 from flask import Flask, jsonify, render_template, request, url_for
 
 #SECTION: GLOBAL VARIABLES: MODIFY TO CHANGE SCRIPT BEHAVIOUR
